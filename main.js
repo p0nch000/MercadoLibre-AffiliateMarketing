@@ -4,6 +4,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { fetchDealsForCategories } from './services/mercadoLibre.js';
 
 dotenv.config();
 
@@ -29,11 +30,13 @@ async function main() {
     await sequelize.sync({force: false});
     console.log("Succesfully connected to DescuentazosMX database...")
 
-    const PORT = process.env.PORT || 4000;
+    const PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
         console.log(`Server running on http://localhost:${PORT}`)
     })
-
+    
+    const deals = await fetchDealsForCategories();
+    console.log(deals);
 }
 
 main();
