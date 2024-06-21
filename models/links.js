@@ -12,7 +12,7 @@ export const Link = sequelize.define(
             primaryKey: true,
         },
         id_product: {
-            type: DataTypes.UUID,
+            type: DataTypes.STRING,
             allowNull: false,
             references: {
                 model: Product,

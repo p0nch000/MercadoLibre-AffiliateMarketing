@@ -5,8 +5,8 @@ export const Product = sequelize.define(
     'Product',
     {
         id_product: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.STRING,
+            defaultValue: DataTypes.STRING,
             allowNull: false,
             primaryKey: true
         },
@@ -18,7 +18,7 @@ export const Product = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false
         },
-        category_id: {
+        id_category: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -27,8 +27,13 @@ export const Product = sequelize.define(
             allowNull: false
         },
         original_price: {
-            type: DataTypes.DOUBLE
+            type: DataTypes.DOUBLE,
+            allowNull: false
         },
+        discount_percentage: {
+            type: DataTypes.DOUBLE,
+            allowNull: false
+        }
     },{
         tableName: 'products'
     }

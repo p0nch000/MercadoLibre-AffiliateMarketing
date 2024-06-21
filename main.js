@@ -1,17 +1,16 @@
 import { sequelize } from './config/db.js';
 import dotenv from 'dotenv';
 import './models/associations.js';
-import { fetchDealsForCategories } from './services/mercadoLibre.js';
+import { storeDeals } from './controllers/deals.js';
 
 dotenv.config();
 
 async function main() {
 
-    await sequelize.sync({force: true});
+    await sequelize.sync({force: false});
     console.log("Succesfully connected to DescuentazosMX database...")
     
-    const deals = await fetchDealsForCategories();
-    console.log(deals);
+    await storeDeals();
 }
 
 main();
