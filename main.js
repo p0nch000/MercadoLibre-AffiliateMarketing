@@ -1,7 +1,7 @@
 import { sequelize } from './config/db.js';
 import dotenv from 'dotenv';
 import './models/associations.js';
-import { storeDeals } from './controllers/deals.js';
+import { storeDeals } from './services/deals.js';
 
 dotenv.config();
 

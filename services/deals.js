@@ -1,6 +1,6 @@
 import { Link } from '../models/links.js';
 import { Product } from '../models/products.js';
-import { fetchDealsForCategories } from '../services/mercadoLibre.js';
+import { fetchDealsForCategories } from './mercadoLibre.js';
 
 // Store the results in the database
 export const storeDeals = async () => {
