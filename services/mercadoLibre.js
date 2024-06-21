@@ -4,8 +4,42 @@ import { categories } from "../utils/categoriesMLM.js";
 
 dotenv.config();
 
+// Refresh the Mercado Libre token
+async function refreshMLToken() {
+    try {
+        const response = await axios.post('https://api.mercadolibre.com/oauth/token', {
+            grant_type: 'refresh_token',
+            client_id: process.env.MERCADO_LIBRE_APP_ID,
+            client_secret: process.env.MERCADO_LIBRE_CLIENT_SECRET,
+            refresh_token: process.env.MERCADO_LIBRE_REFRESH_TOKEN
+        });
+
+        const { access_token, expires_in, refresh_token } = response.data;
+        process.env.MERCADO_LIBRE_ACCESS_TOKEN = access_token;
+        process.env.MERCADO_LIBRE_REFRESH_TOKEN = refresh_token;
+        const newExpirationTime = new Date().getTime() + expires_in * 1000;
+        process.env.MERCADO_LIBRE_TOKEN_EXPIRATION = newExpirationTime;
+
+        console.log('Token refreshed successfully.');
+        return access_token;
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        throw new Error('Failed to refresh token');
+    }
+}
+
+// Get a valid Mercado Libre access token
+async function getValidAccessToken() {
+    const expirationTime = parseInt(process.env.MERCADO_LIBRE_TOKEN_EXPIRATION, 10);
+    if (new Date().getTime() > expirationTime) {
+        return await refreshMLToken();
+    }
+    return process.env.MERCADO_LIBRE_ACCESS_TOKEN;
+}
+
 // Fetch products with category_id, map only the needed values per item
 export const fetchCategoryProducts = async (category_id) => {
+    const accessToken = await getValidAccessToken();
     try {
         const response = await axios.get(`https://api.mercadolibre.com/sites/MLM/search`, {
             params: {
@@ -14,7 +48,7 @@ export const fetchCategoryProducts = async (category_id) => {
                 limit: 10
             },
             headers: {
-                Authorization: `Bearer ${process.env.MERCADO_LIBRE_ACCESS_TOKEN}`
+                Authorization: `Bearer ${accessToken}`
             }
         });
         
@@ -41,7 +75,6 @@ export const fetchCategoryProducts = async (category_id) => {
         return null;  
     }
 };
-
 
 // Get the fetched category products and classify them according to their categories
 export const fetchDealsForCategories = async () => {
