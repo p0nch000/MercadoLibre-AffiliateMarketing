@@ -20,7 +20,7 @@ async function main() {
     console.log("Successfully connected to DescuentazosMX database...");
 
     //Store deals
-    storeDeals(bot);
+    storeDeals();
 
     // Initialize cron job to send products
     sendProducts(bot, userChatIds);
