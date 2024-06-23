@@ -56,7 +56,7 @@ export const fetchCategoryProducts = async (category_id) => {
             const originalPrice = product.original_price || product.price;
             const currentPrice = product.price;
             const discountPercentage = Math.floor(((originalPrice - currentPrice) / originalPrice) * 100);
-
+        
             return {
                 id_product: product.id,
                 title: product.title,
