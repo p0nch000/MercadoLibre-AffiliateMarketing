@@ -65,7 +65,8 @@ export const fetchCategoryProducts = async (category_id) => {
                 price: currentPrice,
                 original_price: originalPrice,
                 discount_percentage: discountPercentage,
-                permalink: product.permalink
+                permalink: product.permalink,
+                marketplace: 'MERCADO LIBRE'
             };
         }).filter(product => product.discount_percentage >= 5); 
 

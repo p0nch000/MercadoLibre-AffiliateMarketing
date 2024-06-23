@@ -33,6 +33,11 @@ export const Product = sequelize.define(
         discount_percentage: {
             type: DataTypes.DOUBLE,
             allowNull: false
+        },
+        marketplace: {
+            type: DataTypes.ENUM,
+            values: ['TEMU', 'MERCADO LIBRE', 'SHEIN'],
+            allowNull: false
         }
     },{
         tableName: 'products'
