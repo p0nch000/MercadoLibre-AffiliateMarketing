@@ -37,7 +37,24 @@ async function getValidAccessToken() {
     return process.env.MERCADO_LIBRE_ACCESS_TOKEN;
 }
 
-// Fetch products with category_id, map only the needed values per item
+// Fetch product details to get high-resolution images
+async function fetchProductDetails(product_id, accessToken) {
+    try {
+        const response = await axios.get(`https://api.mercadolibre.com/items/${product_id}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        const pictures = response.data.pictures.map(pic => pic.url);
+        return pictures.length > 0 ? pictures[0] : null;  
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        return null;
+    }
+}
+
+// Modify your existing function to use the fetchProductDetails
 export const fetchCategoryProducts = async (category_id) => {
     const accessToken = await getValidAccessToken();
     try {
@@ -52,11 +69,12 @@ export const fetchCategoryProducts = async (category_id) => {
             }
         });
 
-        const products = response.data.results.map(product => {
+        const products = await Promise.all(response.data.results.map(async product => {
+            const highResImage = await fetchProductDetails(product.id, accessToken);
             const originalPrice = product.original_price || product.price;
             const currentPrice = product.price;
             const discountPercentage = Math.floor(((originalPrice - currentPrice) / originalPrice) * 100);
-            
+
             return {
                 id_product: product.id,
                 title: product.title,
@@ -66,15 +84,15 @@ export const fetchCategoryProducts = async (category_id) => {
                 original_price: originalPrice,
                 discount_percentage: discountPercentage,
                 permalink: product.permalink,
-                image_url: product.thumbnail, 
+                image_url: highResImage || product.thumbnail,  
                 marketplace: 'MERCADO LIBRE',
             };
-        }).filter(product => product.discount_percentage >= 5); 
+        }));
 
-        return products;
+        return products.filter(product => product.discount_percentage >= 5);
     } catch (error) {
         console.error('Error fetching category products:', error);
-        return null;  
+        return null;
     }
 };
 
