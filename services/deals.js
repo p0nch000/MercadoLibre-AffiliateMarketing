@@ -19,7 +19,8 @@ export const storeDeals = async () => {
                         price: product.price,
                         original_price: product.original_price,
                         discount_percentage: product.discount_percentage,
-                        marketplace: product.marketplace
+                        marketplace: product.marketplace,
+                        image_url: product.image_url
                     }
                 });
 

@@ -34,6 +34,10 @@ export const Product = sequelize.define(
             type: DataTypes.DOUBLE,
             allowNull: false
         },
+        image_url: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         marketplace: {
             type: DataTypes.ENUM,
             values: ['TEMU', 'MERCADO LIBRE', 'SHEIN'],

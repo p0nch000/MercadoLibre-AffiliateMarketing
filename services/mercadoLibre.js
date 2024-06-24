@@ -51,12 +51,12 @@ export const fetchCategoryProducts = async (category_id) => {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        
+
         const products = response.data.results.map(product => {
             const originalPrice = product.original_price || product.price;
             const currentPrice = product.price;
             const discountPercentage = Math.floor(((originalPrice - currentPrice) / originalPrice) * 100);
-        
+            
             return {
                 id_product: product.id,
                 title: product.title,
@@ -66,7 +66,8 @@ export const fetchCategoryProducts = async (category_id) => {
                 original_price: originalPrice,
                 discount_percentage: discountPercentage,
                 permalink: product.permalink,
-                marketplace: 'MERCADO LIBRE'
+                image_url: product.thumbnail, 
+                marketplace: 'MERCADO LIBRE',
             };
         }).filter(product => product.discount_percentage >= 5); 
 
