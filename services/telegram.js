@@ -1,4 +1,5 @@
 import { CronJob } from 'cron';
+import Sequelize from 'sequelize';
 import { Product } from '../models/products.js';
 import { Link } from '../models/links.js';
 import { messageFormat } from '../utils/messageFormat.js';
@@ -26,35 +27,52 @@ export const setupBot = (bot, userChatIds) => {
 
 // Function to send products every minute
 export const sendProducts = (bot, userChatIds) => {
-    const job = new CronJob('0 */1 * * * *', async () => {
-        const link = await Link.findOne({
-            include: [{ 
-                model: Product, 
-                as: 'Product',
-                attributes: ['id_product', 'title', 'price', 'original_price', 'discount_percentage', 'marketplace', 'image_url'] 
-            }]
-        });
+    Link.count({
+        include: [{
+            model: Product,
+            as: 'Product',
+            required: true
+        }]
+    }).then(count => {
+        const productsPerWeek = count;
+        const intervalMinutes = Math.max(1, Math.floor(10080 / productsPerWeek));
+        console.log("Count: ", productsPerWeek);
+        console.log("Interval: ", intervalMinutes);
 
-        if (link && link.Product) {
-            const message = messageFormat(
-                link.Product.marketplace,
-                link.Product.title,
-                link.affiliate_link || link.permalink,
-                link.Product.discount_percentage,
-                link.Product.price,
-                link.Product.original_price
-            );
-
-            userChatIds.forEach(async (chatId) => {
-                await bot.telegram.sendPhoto(chatId, { url: link.Product.image_url }, { caption: message, parse_mode: 'Markdown' });
+        const job = new CronJob(`0 */${intervalMinutes} * * * *`, async () => {
+            const link = await Link.findOne({
+                order: Sequelize.literal('RANDOM()'),
+                include: [{ 
+                    model: Product, 
+                    as: 'Product',
+                    attributes: ['id_product', 'title', 'price', 'original_price', 'discount_percentage', 'marketplace', 'image_url'] 
+                }]
             });
 
-            await link.destroy();
-        } else {
-            console.log("No product found or no link found.");
-        }
+            if (link && link.Product) {
+                const message = messageFormat(
+                    link.Product.marketplace,
+                    link.Product.title,
+                    link.affiliate_link || link.permalink,
+                    link.Product.discount_percentage,
+                    link.Product.price,
+                    link.Product.original_price,
+                    link.Product.image_url
+                );
+
+                userChatIds.forEach(async (chatId) => {
+                    await bot.telegram.sendPhoto(chatId, { url: link.Product.image_url }, { caption: message, parse_mode: 'Markdown' });
+                });
+
+                await link.destroy(); 
+            } else {
+                console.log("No product found or no link found.");
+            }
+        });
+        job.start();
+    }).catch(error => {
+        console.error("Error calculating product distribution:", error);
     });
-    job.start();
 };
 
 

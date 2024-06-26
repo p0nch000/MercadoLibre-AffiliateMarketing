@@ -3,6 +3,8 @@ import { sequelize } from './config/db.js';
 import dotenv from 'dotenv';
 import { Telegraf } from 'telegraf';
 import { storeDeals } from './services/deals.js';
+import { CronJob } from 'cron';
+import { checkAffiliateLinks } from './utils/affiliateLinks.js';
 import { setupBot, sendProducts } from './services/telegram.js'; 
 dotenv.config();
 
@@ -15,15 +17,16 @@ async function main() {
 
     // Start the bot
     bot.launch();
-    
-    await sequelize.sync({force: false});
+
+    await sequelize.sync({ force: false });
     console.log("Successfully connected to DescuentazosMX database...");
 
-    //Store deals
-    await storeDeals();
-
-    // Initialize cron job to send products
-    sendProducts(bot, userChatIds);
+    // Weekly cron job to fetch new deals every Monday at 10 AM
+    const weeklyJob = new CronJob('0 10 * * 3', async () => {
+        await storeDeals();  // Store new deals
+        await checkAffiliateLinks(() => sendProducts(bot, userChatIds));  // Check for affiliate links and send products
+    }, null, true, 'America/Mexico_City');
+    weeklyJob.start();
 
     // Handling graceful shutdown
     process.on('SIGINT', () => shutdown(bot, 'SIGINT'));
