@@ -22,7 +22,7 @@ async function main() {
     console.log("Successfully connected to DescuentazosMX database...");
 
     // Weekly cron job to fetch new deals every Monday at 10 AM
-    const weeklyJob = new CronJob('0 10 * * 3', async () => {
+    const weeklyJob = new CronJob('0 10 * * 1', async () => {
         await storeDeals();  // Store new deals
         await checkAffiliateLinks(() => sendProducts(bot, userChatIds));  // Check for affiliate links and send products
     }, null, true, 'America/Mexico_City');
