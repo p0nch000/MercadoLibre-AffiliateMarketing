@@ -18,7 +18,7 @@ async function main() {
     // Start the bot
     bot.launch();
 
-    await sequelize.sync({ force: false });
+    await sequelize.sync({ force: true });
     console.log("Successfully connected to DescuentazosMX database...");
 
     // Weekly cron job to fetch new deals every Monday at 10 AM

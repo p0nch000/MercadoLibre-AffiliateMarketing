@@ -25,7 +25,7 @@ export const setupBot = (bot, userChatIds) => {
     });
 };
 
-// Function to send products every minute
+// Function to send products every interval calculated
 export const sendProducts = (bot, userChatIds) => {
     Link.count({
         include: [{
