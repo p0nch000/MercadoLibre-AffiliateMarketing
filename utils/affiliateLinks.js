@@ -1,6 +1,11 @@
 import { Link } from '../models/links.js';
 
-//Every 5 minutes checks for affiliate links complete
+/**
+ * Periodically checks for the completion of affiliate links and executes a callback when all links are ready.
+ * This function runs every 5 minutes until all affiliate links are populated.
+ * 
+ * @param {Function} callback - Function to be called when all affiliate links are ready
+ */
 export const checkAffiliateLinks = async (callback) => {
     const checkInterval = 5 * 60 * 1000; 
 

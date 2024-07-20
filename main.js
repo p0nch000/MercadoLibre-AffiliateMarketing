@@ -8,6 +8,9 @@ import { checkAffiliateLinks } from './utils/affiliateLinks.js';
 import { setupBot, sendProducts } from './services/telegram.js'; 
 dotenv.config();
 
+/**
+ * Main function to set up and run the Descuentazos MX bot
+ */
 async function main() {
     const bot = new Telegraf(process.env.BOT_KEY);
     let userChatIds = []; 
@@ -33,6 +36,11 @@ async function main() {
     process.on('SIGTERM', () => shutdown(bot, 'SIGTERM'));
 }
 
+/**
+ * Graceful shutdown function
+ * @param {Object} bot - The Telegram bot instance
+ * @param {string} signal - The signal that triggered the shutdown
+ */
 function shutdown(bot, signal) {
     console.log(`Received ${signal}. Shutting down gracefully...`);
     bot.stop(signal);

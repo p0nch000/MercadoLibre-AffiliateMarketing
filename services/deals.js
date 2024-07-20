@@ -2,7 +2,11 @@ import { Link } from '../models/links.js';
 import { Product } from '../models/products.js';
 import { fetchDealsForCategories } from './mercadoLibre.js';
 
-// Store the results in the database
+/**
+ * Stores product deals fetched from Mercado Libre into the database.
+ * This function fetches deals for all categories, then creates or updates
+ * product entries in the database along with their associated links.
+ */
 export const storeDeals = async () => {
     const deals = await fetchDealsForCategories();
 

@@ -4,7 +4,11 @@ import { Product } from '../models/products.js';
 import { Link } from '../models/links.js';
 import { messageFormat } from '../utils/messageFormat.js';
 
-// Initial Bot Setup
+/**
+ * Sets up the initial bot commands and responses.
+ * @param {Object} bot - The Telegram bot instance
+ * @param {Array} userChatIds - Array to store user chat IDs
+ */
 export const setupBot = (bot, userChatIds) => {
     //Command for starting the bot
     bot.start((ctx) => {
@@ -25,7 +29,12 @@ export const setupBot = (bot, userChatIds) => {
     });
 };
 
-// Function to send products every interval calculated
+/**
+ * Sends products to users at calculated intervals.
+ * This function calculates the interval based on the number of products and sets up a cron job to send products.
+ * @param {Object} bot - The Telegram bot instance
+ * @param {Array} userChatIds - Array of user chat IDs to send products to
+ */
 export const sendProducts = (bot, userChatIds) => {
     Link.count({
         include: [{
